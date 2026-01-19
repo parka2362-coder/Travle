@@ -367,28 +367,32 @@
             targetSceneX: 0
         };
 
-        const STORAGE_KEY = 'travelPickCounts';
+        const API_ENDPOINT = '/api/picks';
+        let pickCounts = {};
 
         function destinationKey(dest) {
             return `${dest.city}|${dest.country}`;
         }
 
-        function loadPickCounts() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                return raw ? JSON.parse(raw) : {};
-            } catch {
-                return {};
-            }
+        async function loadPickCounts() {
+            const res = await fetch(API_ENDPOINT);
+            if (!res.ok) throw new Error('Failed to load pick counts');
+            return res.json();
         }
 
-        function savePickCounts(counts) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(counts));
+        async function incrementPickCount(dest) {
+            const res = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ city: dest.city, country: dest.country })
+            });
+            if (!res.ok) throw new Error('Failed to increment pick count');
+            return res.json();
         }
 
-        function getPickCount(counts, dest) {
+        function getPickCount(dest) {
             const key = destinationKey(dest);
-            return counts[key] || 0;
+            return pickCounts[key] || 0;
         }
 
         const dom = {
@@ -422,7 +426,8 @@
 
             setupLighting();
             createObjects();
-            renderDestinationBoard();
+            renderCandidateBoard();
+            refreshRankBoard();
             setupEvents();
             animate();
         }
@@ -504,10 +509,8 @@
             markerGroup.add(fullMarker);
         }
 
-        function renderDestinationBoard() {
+        function renderCandidateBoard() {
             dom.boardListContainer.innerHTML = '';
-            dom.rankListContainer.innerHTML = '';
-
             destinations.forEach(dest => {
                 const item = document.createElement('div');
                 item.className = 'board-item';
@@ -519,12 +522,14 @@
                 
                 dom.boardListContainer.appendChild(item);
             });
+        }
 
-            const counts = loadPickCounts();
+        function renderRankBoard() {
+            dom.rankListContainer.innerHTML = '';
             const sorted = destinations
                 .slice()
                 .sort((a, b) => {
-                    const diff = getPickCount(counts, b) - getPickCount(counts, a);
+                    const diff = getPickCount(b) - getPickCount(a);
                     if (diff !== 0) return diff;
                     return destinationKey(a).localeCompare(destinationKey(b));
                 });
@@ -532,10 +537,19 @@
             sorted.forEach(dest => {
                 const item = document.createElement('div');
                 item.className = 'board-item';
-                const count = getPickCount(counts, dest);
+                const count = getPickCount(dest);
                 item.innerHTML = `<span class="city">${dest.city}</span><span class="country">${dest.country} · ${count}회</span>`;
                 dom.rankListContainer.appendChild(item);
             });
+        }
+
+        async function refreshRankBoard() {
+            try {
+                pickCounts = await loadPickCounts();
+            } catch {
+                pickCounts = pickCounts || {};
+            }
+            renderRankBoard();
         }
 
         // 호버 시 호출될 함수
@@ -756,11 +770,12 @@
             dom.description.textContent = state.currentTarget.desc;
             dom.coords.textContent = `${state.currentTarget.lat}° N, ${state.currentTarget.lon}° E`;
 
-            const counts = loadPickCounts();
-            const key = destinationKey(state.currentTarget);
-            counts[key] = (counts[key] || 0) + 1;
-            savePickCounts(counts);
-            renderDestinationBoard();
+            incrementPickCount(state.currentTarget)
+                .then((counts) => {
+                    pickCounts = counts;
+                    renderRankBoard();
+                })
+                .catch(() => {});
 
             dom.resultCard.classList.remove('hidden');
             setTimeout(() => dom.resultCard.classList.add('show'), 50);

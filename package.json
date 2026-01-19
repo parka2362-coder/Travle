@@ -1,0 +1,13 @@
+﻿{
+  "name": "travel-picker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Travel picker with server-side pick counts",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
