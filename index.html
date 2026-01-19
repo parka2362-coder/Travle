@@ -367,7 +367,9 @@
             targetSceneX: 0
         };
 
-        const API_ENDPOINT = '/api/picks';
+        const API_ENDPOINT = location.hostname.endsWith('github.io')
+            ? 'https://travle.onrender.com/api/picks'
+            : '/api/picks';
         let pickCounts = {};
 
         function destinationKey(dest) {
