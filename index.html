@@ -111,6 +111,11 @@
                 padding-bottom: 2rem;
             }
 
+            .mobile-scroll-spacer {
+                display: block;
+                height: 100vh;
+            }
+
             .destination-board,
             .rank-board {
                 position: relative;
@@ -155,6 +160,8 @@
 
         .destination-board { left: 2rem; }
         .rank-board { right: 2rem; }
+
+        .mobile-scroll-spacer { display: none; }
 
         .board-title {
             font-size: 0.8rem;
@@ -267,16 +274,6 @@
             </p>
         </header>
 
-        <!-- 후보 리스트 보드 -->
-        <div id="destination-board" class="destination-board interactive-element flex">
-            <div class="board-title">Travel Candidates</div>
-            <div id="board-list-container" class="board-list"></div>
-        </div>
-        <div id="rank-board" class="rank-board interactive-element flex">
-            <div class="board-title">Pick Ranking</div>
-            <div id="rank-list-container" class="board-list"></div>
-        </div>
-
         <!-- 결과 팝업 -->
         <div id="result-card" class="pop-panel p-5 interactive-element text-center hidden">
             <div class="mb-2 text-blue-600 font-bold tracking-widest text-[10px] uppercase">DESTINATION FOUND</div>
@@ -299,6 +296,18 @@
                 <div id="btn-loader" class="loader"></div>
                 <span id="btn-text">🎲 여행지 뽑기</span>
             </button>
+        </div>
+
+        <div class="mobile-scroll-spacer"></div>
+
+        <!-- 후보 리스트 보드 -->
+        <div id="destination-board" class="destination-board interactive-element flex">
+            <div class="board-title">Travel Candidates</div>
+            <div id="board-list-container" class="board-list"></div>
+        </div>
+        <div id="rank-board" class="rank-board interactive-element flex">
+            <div class="board-title">Pick Ranking</div>
+            <div id="rank-list-container" class="board-list"></div>
         </div>
     </div>
 
