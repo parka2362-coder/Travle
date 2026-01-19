@@ -107,10 +107,10 @@
         }
 
         /* --- 여행지 리스트 보드 스타일 --- */
-        .destination-board {
+        .destination-board,
+        .rank-board {
             position: absolute;
             top: 50%;
-            left: 2rem; 
             transform: translateY(-50%);
             width: 11rem; 
             max-height: 55vh;
@@ -134,6 +134,9 @@
             opacity: 0;
             pointer-events: none;
         }
+
+        .destination-board { left: 2rem; }
+        .rank-board { right: 2rem; }
 
         .board-title {
             font-size: 0.8rem;
@@ -248,8 +251,12 @@
 
         <!-- 후보 리스트 보드 -->
         <div id="destination-board" class="destination-board interactive-element hidden md:flex">
-            <div class="board-title">Pick Ranking</div>
+            <div class="board-title">Travel Candidates</div>
             <div id="board-list-container" class="board-list"></div>
+        </div>
+        <div id="rank-board" class="rank-board interactive-element hidden md:flex">
+            <div class="board-title">Pick Ranking</div>
+            <div id="rank-list-container" class="board-list"></div>
         </div>
 
         <!-- 결과 팝업 -->
@@ -377,6 +384,7 @@
             coords: document.getElementById('coords'),
             uiLayer: document.getElementById('ui-layer'),
             boardListContainer: document.getElementById('board-list-container'),
+            rankListContainer: document.getElementById('rank-list-container'),
             destinationBoard: document.getElementById('destination-board'),
             cssPlane: document.getElementById('css-plane')
         };
@@ -479,7 +487,21 @@
         }
 
         function renderDestinationBoard() {
-            dom.boardListContainer.innerHTML = ''; 
+            dom.boardListContainer.innerHTML = '';
+            dom.rankListContainer.innerHTML = '';
+
+            destinations.forEach(dest => {
+                const item = document.createElement('div');
+                item.className = 'board-item';
+                item.innerHTML = `<span class="city">${dest.city}</span><span class="country">${dest.country}</span>`;
+                
+                // 호버 이벤트 추가
+                item.addEventListener('mouseenter', () => onBoardItemHover(dest));
+                item.addEventListener('mouseleave', onBoardItemLeave);
+                
+                dom.boardListContainer.appendChild(item);
+            });
+
             const counts = loadPickCounts();
             const sorted = destinations
                 .slice()
@@ -494,12 +516,7 @@
                 item.className = 'board-item';
                 const count = getPickCount(counts, dest);
                 item.innerHTML = `<span class="city">${dest.city}</span><span class="country">${dest.country} · ${count}회</span>`;
-                
-                // 호버 이벤트 추가
-                item.addEventListener('mouseenter', () => onBoardItemHover(dest));
-                item.addEventListener('mouseleave', onBoardItemLeave);
-                
-                dom.boardListContainer.appendChild(item);
+                dom.rankListContainer.appendChild(item);
             });
         }
 
