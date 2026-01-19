@@ -104,6 +104,24 @@
                 transform: translate(-50%, -50%);
                 opacity: 1;
             }
+
+            #ui-layer {
+                overflow-y: auto;
+                pointer-events: auto;
+                padding-bottom: 2rem;
+            }
+
+            .destination-board,
+            .rank-board {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                transform: none;
+                width: min(92%, 22rem);
+                max-height: none;
+                margin: 1rem auto 0;
+            }
         }
 
         /* --- 여행지 리스트 보드 스타일 --- */
@@ -250,11 +268,11 @@
         </header>
 
         <!-- 후보 리스트 보드 -->
-        <div id="destination-board" class="destination-board interactive-element hidden md:flex">
+        <div id="destination-board" class="destination-board interactive-element flex">
             <div class="board-title">Travel Candidates</div>
             <div id="board-list-container" class="board-list"></div>
         </div>
-        <div id="rank-board" class="rank-board interactive-element hidden md:flex">
+        <div id="rank-board" class="rank-board interactive-element flex">
             <div class="board-title">Pick Ranking</div>
             <div id="rank-list-container" class="board-list"></div>
         </div>
